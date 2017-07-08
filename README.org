@@ -1,33 +1,25 @@
 * Setup
 :properties:
-:header-args: :mkdirp yes :tangle ~/thing6.sh
+:header-args: :tangle tup.command :shebang #!/bin/sh
+:end:
 #+startup: content hideblocks hidestars indent
-:end:
 
-** Install Spacemacs
-#+begin_src sh :results silent
-mkdir -p "${HOME}/.emacs.d" \
-  && curl --compressed --location --silent \
-    "https://github.com/syl20bnr/spacemacs/archive/master.tar.gz" \
-  | tar -C "${HOME}/.emacs.d" --strip-components 1 -xf -
-#+end_src
+** Configure Emacs
 
-** Configure Spacemacs
-
-:properties:
-:header-args+: :tangle ~/thing8.sh
-:end:
-
-*** .spacemacs
-:properties:
-:header-args: :tangle ~/thing9.sh
-:end:
+*** Download [[http://spacemacs.org/][Spacemacs]]
 
 #+begin_src sh
-catty
+function config_emacs () {
+  mkdir -p "${HOME}/.emacs.d" \
+    && curl --compressed --location --silent \
+      "https://github.com/syl20bnr/spacemacs/archive/master.tar.gz" \
+    | tar -C "${HOME}/.emacs.d" --strip-components 1 -xf -
 #+end_src
 
-#+begin_src lisp :prologue "cat > ${HOME}/.spacemacs <<-EOF" :epilogue "EOF"
+*** Create ~~/.spacemacs~
+
+#+begin_src sh
+  cat > "${HOME}/.spacemacs" <<-EOF
 (defun dotspacemacs/layers ()
   (setq-default
     dotspacemacs-configuration-layers '(
@@ -94,14 +86,6 @@ catty
 (defun dotspacemacs/user-config ())
 #+end_src
 
-** Stuff
-Things inside stuff
-** More Stuff
-Things inside more stuff
-#+begin_src sh :prologue "thing" :tangle ~/a/thing2.sh :shebang #!/bin/sh
-hi
-#+end_src
-
 
 * Notes
 
@@ -109,4 +93,17 @@ hi
 # :header-args: :tangle ~/thing.sh :shebang #!/bin/sh
 # :end:
 #
+#
+
+# :properties:
+# :header-args+: :tangle ~/thing8.sh: :shebang #!/bin/sh
+# :end:
+#
+# #** Stuff
+# Things inside stuff
+# ** More Stuff
+# Things inside more stuff
+# #+begin_src sh :prologue "thing" :tangle ~/a/thing2.sh :shebang #!/bin/sh
+# hi
+# #+end_src
 #
