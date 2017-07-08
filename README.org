@@ -15,10 +15,10 @@ mkdir -p "${HOME}/.emacs.d" \
 ** Configure Spacemacs
 
 *** .spacemacs
-:properties:
+:PROPERTIES:
 :header-args+: :prologue "cat > ${HOME}/.spacemacs <<-EOF"
 :header-args+: :epilogue "EOF"
-:end:
+:END:
 
 #+begin_src lisp
 (defun dotspacemacs/layers ()
