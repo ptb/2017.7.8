@@ -16,7 +16,7 @@ function config_emacs () {
     | tar -C "${HOME}/.emacs.d" --strip-components 1 -xf -
 #+end_src
 
-*** Create ~~/.spacemacs~
+*** Create ~/.spacemacs~
 
 #+begin_src sh
   cat > "${HOME}/.spacemacs" <<-EOF
