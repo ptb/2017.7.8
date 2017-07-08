@@ -1,0 +1,105 @@
+* Setup
+:properties:
+:header-args: :mkdirp yes
+#+startup: content hideblocks hidestars indent
+:end:
+
+** Install Spacemacs
+#+begin_src sh :results silent
+mkdir -p "${HOME}/.emacs.d" \
+  && curl --compressed --location --silent \
+    "https://github.com/syl20bnr/spacemacs/archive/master.tar.gz" \
+  | tar -C "${HOME}/.emacs.d" --strip-components 1 -xf -
+#+end_src
+
+** Configure Spacemacs
+
+*** .spacemacs
+:properties:
+:header-args+: :prologue "cat > ${HOME}/.spacemacs <<-EOF"
+:header-args+: :epilogue "EOF"
+:end:
+
+#+begin_src lisp
+(defun dotspacemacs/layers ()
+  (setq-default
+    dotspacemacs-configuration-layers '(
+      auto-completion
+      (colors :variables
+        colors-colorize-identifiers 'variables)
+      dash
+      deft
+      docker
+      emacs-lisp
+      evil-cleverparens
+      git
+      github
+      helm
+      html
+      ibuffer
+      imenu-list
+      javascript
+      markdown
+      nginx
+      (org :variables
+        org-enable-github-support t)
+      (osx :variables
+        osx-use-option-as-meta nil)
+      ptb
+      react
+      ruby
+      ruby-on-rails
+      search-engine
+      semantic
+      shell-scripts
+      (spell-checking :variables
+        spell-checking-enable-by-default nil)
+      syntax-checking
+      (version-control :variables
+        version-control-diff-side 'left)
+      vim-empty-lines
+    )
+    dotspacemacs-excluded-packages '(org-bullets)
+  )
+)
+
+(defun dotspacemacs/init ()
+  (setq-default
+    dotspacemacs-startup-banner nil
+    dotspacemacs-startup-lists nil
+    dotspacemacs-scratch-mode 'org-mode
+    dotspacemacs-themes '(sanityinc-tomorrow-eighties)
+    dotspacemacs-default-font '(
+      "Inconsolata LGC"
+      :size 13
+      :weight normal
+      :width normal
+      :powerline-scale 1.1)
+    dotspacemacs-loading-progress-bar nil
+    dotspacemacs-active-transparency 100
+    dotspacemacs-inactive-transparency 100
+    dotspacemacs-line-numbers t
+    dotspacemacs-whitespace-cleanup 'all
+  )
+)
+
+(defun dotspacemacs/user-init ())
+(defun dotspacemacs/user-config ())
+#+end_src
+
+** Stuff
+Things inside stuff
+** More Stuff
+Things inside more stuff
+#+begin_src sh :prologue "thing" :tangle ~/a/thing2.sh :shebang #!/bin/sh
+hi
+#+end_src
+
+
+* Notes
+
+# :properties:
+# :header-args: :tangle ~/thing.sh :shebang #!/bin/sh
+# :end:
+#
+#
