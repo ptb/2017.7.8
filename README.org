@@ -23,7 +23,7 @@ function config_emacs () {
 :header-args:sh+: :prologue "cat > ${HOME}/.spacemacs <<-EOF" :epilogue "EOF"
 :end:
 
-#+begin_src sh
+#+begin_src lisp
 (defun dotspacemacs/layers ()
   (setq-default
     dotspacemacs-configuration-layers '(
