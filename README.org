@@ -1,6 +1,6 @@
 * Setup
 :properties:
-:header-args: :mkdirp yes
+:header-args: :mkdirp yes :tangle ~/thing6.sh
 #+startup: content hideblocks hidestars indent
 :end:
 
@@ -14,13 +14,20 @@ mkdir -p "${HOME}/.emacs.d" \
 
 ** Configure Spacemacs
 
+:properties:
+:header-args+: :tangle ~/thing8.sh
+:end:
+
 *** .spacemacs
 :properties:
-:header-args: :prologue "cat > ${HOME}/.spacemacs <<-EOF"
-:header-args+: :epilogue "EOF"
-:END:
+:header-args: :tangle ~/thing9.sh
+:end:
 
-#+begin_src lisp
+#+begin_src sh
+catty
+#+end_src
+
+#+begin_src lisp :prologue "cat > ${HOME}/.spacemacs <<-EOF" :epilogue "EOF"
 (defun dotspacemacs/layers ()
   (setq-default
     dotspacemacs-configuration-layers '(
