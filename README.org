@@ -1,28 +1,26 @@
 * Setup
 :properties:
 :header-args: :tangle setup.command
-:header-args:sh: :shebang #!/bin/sh
+:header-args:sh: :shebang #!/bin/sh :results silent
 :end:
 #+startup: content hideblocks hidestars indent
 
 ** Configure Emacs
 
 *** Download [[http://spacemacs.org/][Spacemacs]]
-
 #+begin_src sh
-function config_emacs () {
-  mkdir -p "${HOME}/.emacs.d" \
-    && curl --compressed --location --silent \
-      "https://github.com/syl20bnr/spacemacs/archive/master.tar.gz" \
-    | tar -C "${HOME}/.emacs.d" --strip-components 1 -xf -
+mkdir -p "${HOME}/.emacs.d" \
+  && curl --compressed --location --silent \
+    "https://github.com/syl20bnr/spacemacs/archive/master.tar.gz" \
+  | tar -C "${HOME}/.emacs.d" --strip-components 1 -xf -
 #+end_src
 
 *** Create =~/.spacemacs=
 :properties:
 :header-args:lisp: :tangle ~/.spacemacs
-:header-args:sh+: :prologue "cat > ${HOME}/.spacemacs <<-EOF" :epilogue "EOF"
+:header-args:sh+: :prologue "cat > ${HOME}/.spacemacs <<-EOF"
+:header-args:sh+: :epilogue "EOF"
 :end:
-
 #+begin_src lisp
 (defun dotspacemacs/layers ()
   (setq-default
@@ -90,7 +88,192 @@ function config_emacs () {
 (defun dotspacemacs/user-config ())
 #+end_src
 
-** thing
+*** Create =~/.emacs.d/private/ptb/config.el=
+:properties:
+:header-args:lisp: :tangle ~/.emacs.d/private/ptb/config.el
+:header-args:sh+: :prologue "cat > ${HOME}/.emacs.d/private/ptb/config.el <<-EOF"
+:header-args:sh+: :epilogue "EOF"
+:end:
+#+begin_src lisp
+(setq
+  default-frame-alist '(
+    (top . 22)
+    (left . 1790)
+    (height . 40)
+    (width . 91)
+    (vertical-scroll-bars . right))
+  initial-frame-alist (copy-alist default-frame-alist)
+
+  deft-directory "~/Dropbox/Notes"
+  focus-follows-mouse t
+  mouse-wheel-follow-mouse t
+  mouse-wheel-scroll-amount '(1 ((shift) . 1))
+  purpose-display-at-right 20
+  recentf-max-saved-items 5
+  scroll-step 1
+  system-uses-terminfo nil
+
+  ibuffer-formats '(
+    (mark modified read-only " "
+    (name 18 18 :left :elide)))
+
+  ibuffer-shrink-to-minimum-size t
+  ibuffer-always-show-last-buffer nil
+  ibuffer-sorting-mode 'recency
+  ibuffer-use-header-line nil)
+
+(global-linum-mode t)
+(recentf-mode t)
+(x-focus-frame nil)
+(with-eval-after-load 'org
+  (org-babel-do-load-languages
+    'org-babel-load-languages '(
+      (ruby . t)
+      (shell . t)
+    )
+  )
+)
+#+end_src
+
+*** Create =~/.emacs.d/private/ptb/funcs.el=
+:properties:
+:header-args:lisp: :tangle ~/.emacs.d/private/ptb/funcs.el
+:header-args:sh+: :prologue "cat > ${HOME}/.emacs.d/private/ptb/funcs.el <<-EOF"
+:header-args:sh+: :epilogue "EOF"
+:end:
+#+begin_src lisp
+(defun is-useless-buffer (buffer)
+  (let ((name (buffer-name buffer)))
+    (and (= ?* (aref name 0))
+         (string-match "^\\**" name))))
+
+(defun kill-useless-buffers ()
+  (interactive)
+  (loop for buffer being the buffers
+        do (and (is-useless-buffer buffer) (kill-buffer buffer))))
+
+(defun org-babel-tangle-hook ()
+  (add-hook 'after-save-hook 'org-babel-tangle))
+
+(add-hook 'org-mode-hook #'org-babel-tangle-hook)
+
+(defun ptb/get-buffer-menu-in-new-frame ()
+  (interactive)
+  (switch-to-buffer-other-frame (list-buffers-noselect)))
+
+(defun ptb/minibuffer-keyboard-quit ()
+  (interactive)
+  (if
+    (and delete-selection-mode transient-mark-mode mark-active)
+    (setq deactivate-mark  t)
+    (when (get-buffer "*Completions*") (delete-windows-on "*Completions*"))
+    (abort-recursive-edit)))
+
+(defun ptb/new-untitled-buffer ()
+  "Create a new untitled buffer in the current frame."
+  (interactive)
+  (let
+    ((buffer "Untitled-") (count 1))
+    (while
+      (get-buffer (concat buffer (number-to-string count)))
+      (setq count (1+ count)))
+    (switch-to-buffer
+     (concat buffer (number-to-string count))))
+  (org-mode))
+
+(defun ptb/new-untitled-frame ()
+  "Create a new untitled buffer in a new frame."
+  (interactive)
+  (let
+    ((buffer "Untitled-") (count 1))
+    (while
+      (get-buffer (concat buffer (number-to-string count)))
+      (setq count (1+ count)))
+    (switch-to-buffer-other-frame
+     (concat buffer (number-to-string count))))
+  (org-mode))
+
+(defun ptb/previous-buffer ()
+  (interactive)
+  (kill-useless-buffers)
+  (previous-buffer))
+
+(defun ptb/next-buffer ()
+  (interactive)
+  (kill-useless-buffers)
+  (next-buffer))
+
+(defun ptb/kill-current-buffer ()
+  (interactive)
+  (kill-buffer (current-buffer))
+  (kill-useless-buffers))
+#+end_src
+
+*** Create =~/.emacs.d/private/ptb/keybindings.el=
+:properties:
+:header-args:lisp: :tangle ~/.emacs.d/private/ptb/keybindings.el
+:header-args:sh+: :prologue "cat > ${HOME}/.emacs.d/private/ptb/keybindings.el <<-EOF"
+:header-args:sh+: :epilogue "EOF"
+:end:
+#+begin_src lisp
+(define-key evil-insert-state-map (kbd "S-<down>") 'evil-next-visual-line)
+(define-key evil-insert-state-map (kbd "S-<up>") 'evil-previous-visual-line)
+(define-key evil-motion-state-map (kbd "S-<down>") 'evil-next-visual-line)
+(define-key evil-motion-state-map (kbd "S-<up>") 'evil-previous-visual-line)
+(define-key evil-normal-state-map (kbd "S-<down>") 'evil-next-visual-line)
+(define-key evil-normal-state-map (kbd "S-<up>") 'evil-previous-visual-line)
+(define-key evil-visual-state-map (kbd "S-<down>") 'evil-next-visual-line)
+(define-key evil-visual-state-map (kbd "S-<up>") 'evil-previous-visual-line)
+
+(define-key evil-normal-state-map [escape] 'keyboard-quit)
+(define-key evil-visual-state-map [escape] 'keyboard-quit)
+(define-key minibuffer-local-completion-map [escape] 'ptb/minibuffer-keyboard-quit)
+(define-key minibuffer-local-isearch-map [escape] 'ptb/minibuffer-keyboard-quit)
+(define-key minibuffer-local-map [escape] 'ptb/minibuffer-keyboard-quit)
+(define-key minibuffer-local-must-match-map [escape] 'ptb/minibuffer-keyboard-quit)
+(define-key minibuffer-local-ns-map [escape] 'ptb/minibuffer-keyboard-quit)
+(global-set-key [escape] 'evil-exit-emacs-state)
+
+(global-set-key (kbd "<end>") 'end-of-line)
+(global-set-key (kbd "<home>") 'beginning-of-line)
+(global-set-key (kbd "RET") 'newline-and-indent)
+
+(global-set-key (kbd "C-l") 'evil-search-highlight-persist-remove-all)
+
+(global-set-key (kbd "s-a") 'mark-whole-buffer)
+(global-set-key (kbd "s-n") 'ptb/new-untitled-frame)
+(global-set-key (kbd "s-w") 'ptb/kill-current-buffer)
+(global-set-key (kbd "s-{") 'ptb/previous-buffer)
+(global-set-key (kbd "s-}") 'ptb/next-buffer)
+#+end_src
+
+*** Create =~/.emacs.d/private/ptb/packages.el=
+:properties:
+:header-args:lisp: :tangle ~/.emacs.d/private/ptb/packages.el
+:header-args:sh+: :prologue "cat > ${HOME}/.emacs.d/private/ptb/packages.el <<-EOF"
+:header-args:sh+: :epilogue "EOF"
+:end:
+#+begin_src lisp
+  (setq ptb-packages '(auto-indent-mode inline-crypt))
+
+  (defun ptb/init-auto-indent-mode ()
+    (use-package auto-indent-mode
+      :init
+      (setq
+        auto-indent-delete-backward-char t
+        auto-indent-fix-org-auto-fill t
+        auto-indent-fix-org-move-beginning-of-line t
+        auto-indent-fix-org-return t
+        auto-indent-fix-org-yank t
+        auto-indent-start-org-indent t
+      )
+    )
+  )
+
+  (defun ptb/init-inline-crypt ()
+    (use-package inline-crypt :init))
+#+end_src
+
 
 * Notes
 
