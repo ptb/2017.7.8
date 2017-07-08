@@ -16,7 +16,7 @@ mkdir -p "${HOME}/.emacs.d" \
 
 *** .spacemacs
 :PROPERTIES:
-:HEADER-ARGS+: :prologue "cat > ${HOME}/.spacemacs <<-EOF"
+:header-args: :prologue "cat > ${HOME}/.spacemacs <<-EOF"
 :header-args+: :epilogue "EOF"
 :END:
 
